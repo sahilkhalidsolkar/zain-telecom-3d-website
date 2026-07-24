@@ -1,0 +1,28 @@
+/*
+ * motion.css
+ * 
+ * Responsibility:
+ * Lenis recommended styles and any global CSS transitions/animations 
+ * that are better handled by CSS than GSAP (e.g. simple hover states).
+ */
+
+html.lenis,
+html.lenis body {
+  height: auto;
+}
+
+.lenis.lenis-smooth {
+  scroll-behavior: auto !important;
+}
+
+.lenis.lenis-smooth [data-lenis-prevent] {
+  overscroll-behavior: contain;
+}
+
+.lenis.lenis-stopped {
+  overflow: hidden;
+}
+
+.lenis.lenis-scrolling iframe {
+  pointer-events: none;
+}

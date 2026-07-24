@@ -1,0 +1,45 @@
+@import 'tailwindcss';
+@import './variables.css';
+@import './fonts.css';
+@import './motion.css';
+
+@theme {
+  --color-primary: var(--color-primary);
+  --color-secondary: var(--color-secondary);
+  --color-accent: var(--color-accent);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+}
+
+/*
+ * globals.css
+ * 
+ * Responsibility:
+ * Imports Tailwind directives, and our custom CSS modules.
+ * Sets the base html and body styles to prevent default scrolling 
+ * (handled by Lenis) and sets up the full-screen canvas container.
+ */
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+  overflow-x: hidden;
+  background-color: var(--color-primary);
+  color: var(--color-secondary);
+  font-family: var(--font-geist-sans), Arial, Helvetica, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+#canvas-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 0;
+  background-color: #000;
+  pointer-events: none; /* Let pointer events pass through to DOM elements by default */
+}

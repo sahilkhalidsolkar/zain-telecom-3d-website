@@ -1,0 +1,9 @@
+/*
+ * fonts.css
+ * 
+ * Responsibility:
+ * Font-face declarations. We load custom web fonts here.
+ * Ensuring fonts are preloaded before canvas text generation.
+ */
+
+/* TODO: Add @font-face rules for Zain brand typography */

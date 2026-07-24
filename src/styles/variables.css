@@ -1,0 +1,13 @@
+/*
+ * variables.css
+ * 
+ * Responsibility:
+ * CSS Custom Properties mapping to our brand colors and spacing tokens.
+ * Allows easy toggling of themes via JavaScript by changing data-theme attributes.
+ */
+
+:root {
+  --color-primary: #000000;
+  --color-secondary: #ffffff;
+  --color-accent: #ff0000; /* Example Zain red */
+}
