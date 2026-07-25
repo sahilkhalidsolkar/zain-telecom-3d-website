@@ -1,6 +1,17 @@
-allowBuilds:
-  sharp: set this to true or false
-  unrs-resolver: set this to true or false
+# Both of these are transitive dependencies with native build scripts that
+# pnpm (as of v10+) refuses to run without explicit approval — neither is
+# actually needed by this app:
+#   - sharp: only used by Next.js's built-in image optimization (next/image),
+#     which this app never uses (plain <img> tags throughout, and irrelevant
+#     anyway now that next.config.ts uses `output: "export"` — static export
+#     has no image-optimization server to begin with).
+#   - unrs-resolver: a native module-resolution helper pulled in by ESLint's
+#     tooling chain; `pnpm lint` has run clean all session without its native
+#     build, confirming ESLint falls back fine without it.
+# Explicitly ignoring both here (rather than leaving pnpm print the "Ignored
+# build scripts" warning and wait for an interactive `pnpm approve-builds`,
+# which needs a terminal Render's build environment doesn't have) keeps
+# `pnpm install` fully non-interactive in CI/deploy.
 ignoredBuiltDependencies:
   - sharp
   - unrs-resolver

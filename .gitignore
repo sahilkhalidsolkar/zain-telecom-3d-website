@@ -44,8 +44,3 @@ next-env.d.ts
 .claude
 .vscode
 CLAUDE.md
-
-# original high-res source textures, kept locally for future re-export but
-# not part of the deployed app (see public/assets/textures/earth/ for the
-# actual served, size-optimized versions)
-/source-assets

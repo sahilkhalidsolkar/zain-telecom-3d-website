@@ -13,10 +13,20 @@ const EXIT_DELAY_MS = 400;
  * Safety net: if `isSceneReady` never arrives for some reason (a device/
  * browser combination where the GPU-upload path behaves unexpectedly, or
  * any other edge case), this loading gate must not be able to trap the user
- * forever behind a stuck 99%. Once `isLoaded` is true, proceed anyway after
- * this many ms even without the scene-ready signal.
+ * forever behind a stuck 99%. Once `isLoaded` is true (all 4 Earth textures
+ * already downloaded and JS-decoded), proceed anyway after this many ms even
+ * without the scene-ready signal.
+ *
+ * This only bounds the *post-download* GPU-upload step, not total load time —
+ * but that step's cost still scales with decoded pixel data (mipmap
+ * generation included), and these are now the full 8K textures (~134MB of
+ * decoded pixels each, 4 of them) rather than a 2K pass tried earlier. Kept
+ * generous specifically so this can't fire prematurely on a slower
+ * GPU/mobile device mid-upload — which would silently reintroduce the exact
+ * "says ready, isn't" bug this whole isLoaded/isSceneReady split exists to
+ * fix — while still protecting against a genuinely stuck signal.
  */
-const FORCE_READY_TIMEOUT_MS = 8000;
+const FORCE_READY_TIMEOUT_MS = 15000;
 
 /**
  * Full-screen gate shown from first paint until the scene is actually ready
