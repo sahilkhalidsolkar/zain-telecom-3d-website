@@ -6,6 +6,7 @@ import { ChapterText } from '@/components/html/ChapterText';
 import { ChapterCards } from '@/components/html/ChapterCards';
 import { Hero } from '@/components/html/Hero';
 import { Footer } from '@/components/html/Footer';
+import { Navbar } from '@/components/html/Navbar';
 import { TOTAL_SCROLL_VH } from '@/constants/scroll';
 
 export default function Home() {
@@ -20,6 +21,7 @@ export default function Home() {
             </ThreeProvider>
 
             {/* 2D HTML Overlay Layer */}
+            <Navbar />
             <Hero />
             <ChapterText />
             <ChapterCards />

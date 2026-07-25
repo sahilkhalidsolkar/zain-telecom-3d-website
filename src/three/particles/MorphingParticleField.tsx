@@ -39,9 +39,9 @@ const PURPLE = new THREE.Color('#8a2be2').multiplyScalar(0.5);
 const WARM = new THREE.Color('#ffb066').multiplyScalar(0.5);
 
 const PARTICLE_COUNT_BY_TIER: Record<QualityTier, number> = {
-  high: 6000,
-  medium: 3000,
-  low: 1200,
+  high: 2500,
+  medium: 1200,
+  low: 500,
 };
 
 interface MorphingParticleFieldProps {
@@ -130,9 +130,19 @@ export const MorphingParticleField = ({ count: countOverride }: MorphingParticle
   });
 
   return (
-    <instancedMesh ref={meshRef} args={[undefined, undefined, count]}>
-      {/* Small, dust-like — previously 0.045 read as chunky faceted hexagons rather than fine particles. */}
-      <icosahedronGeometry args={[0.014, 0]} />
+    <instancedMesh
+      ref={meshRef}
+      args={[undefined, undefined, count]}
+      frustumCulled={false}
+    >
+      {/*
+        circleGeometry (6 segments) renders as a crisp round dot at this scale
+        and costs only 6 verts vs 20 for icosahedron. Combined with
+        AdditiveBlending + depthWrite:false, it produces soft glowing circles.
+        Radius 0.008 — smaller than the previous 0.014 icosahedron so individual
+        dots read as fine dust rather than visible blobs.
+      */}
+      <circleGeometry args={[0.014, 6]} />
       <primitive object={shaderMaterial} attach="material" />
     </instancedMesh>
   );
