@@ -3,7 +3,7 @@
  *
  * Responsibility:
  * Single source of truth for the 9-chapter cinematic narrative. Every visual
- * system (particles, Earth, camera, network arcs, satellites) and every 2D
+ * system (particles, Earth, camera, country beacons, satellites) and every 2D
  * text overlay derives its state from this configuration rather than
  * running its own scroll logic, so the whole experience stays choreographed
  * from one place. Ranges are fractions (0-1) of the total scroll distance
@@ -66,7 +66,7 @@ export interface VisibleSystems {
   particles: boolean;
   earth: boolean;
   satellites: boolean;
-  networkArcs: boolean;
+  countryBeacons: boolean;
 }
 
 export interface ChapterCard {
@@ -96,7 +96,7 @@ const hidden: VisibleSystems = {
   particles: false,
   earth: false,
   satellites: false,
-  networkArcs: false,
+  countryBeacons: false,
 };
 
 export const CHAPTERS: ChapterConfig[] = [
@@ -164,7 +164,7 @@ export const CHAPTERS: ChapterConfig[] = [
       lookAt: [0, 0, 0],
     },
     morphTarget: 'networkSphere',
-    visibleSystems: { ...hidden, particles: true, earth: true, satellites: true, networkArcs: true },
+    visibleSystems: { ...hidden, particles: true, earth: true, satellites: true, countryBeacons: true },
     text: ['From one nation...', '', 'to eight markets.', '', 'Connecting millions across', 'the Middle East and Africa.'],
     cards: [
       { title: 'Kuwait', body: 'Est. 1983 — the region’s first mobile operator.' },
@@ -192,7 +192,7 @@ export const CHAPTERS: ChapterConfig[] = [
       lookAt: [0, 0, 0],
     },
     morphTarget: 'networkSphere',
-    visibleSystems: { ...hidden, particles: true, earth: true, satellites: true, networkArcs: true },
+    visibleSystems: { ...hidden, particles: true, earth: true, satellites: true, countryBeacons: true },
     text: ['51.2 Million Customers', '9,000 Employees', 'Founded in 1983', 'Operations in Eight Countries'],
     cards: [
       { title: '51.2M', body: 'Total Active Customers' },
@@ -219,7 +219,7 @@ export const CHAPTERS: ChapterConfig[] = [
       lookAt: [0, 0, 0],
     },
     morphTarget: 'networkSphere',
-    visibleSystems: { ...hidden, particles: true, earth: true, satellites: true, networkArcs: true },
+    visibleSystems: { ...hidden, particles: true, earth: true, satellites: true, countryBeacons: true },
     text: ['Beyond telecommunications.', '', 'Building', 'a technology ecosystem.'],
     // Descriptors are inferred from the brand names, not confirmed by the
     // zain.com crawl (docs/zain-content/) — flagged for fact-check before
@@ -250,7 +250,7 @@ export const CHAPTERS: ChapterConfig[] = [
       lookAt: [0, 0, 0],
     },
     morphTarget: 'networkSphere',
-    visibleSystems: { ...hidden, particles: true, earth: true, satellites: true, networkArcs: true },
+    visibleSystems: { ...hidden, particles: true, earth: true, satellites: true, countryBeacons: true },
     text: ['Artificial Intelligence', 'Cloud', 'Enterprise', 'Cybersecurity', 'Fintech', 'Gaming', 'Digital Infrastructure'],
   },
   {
@@ -267,7 +267,7 @@ export const CHAPTERS: ChapterConfig[] = [
       lookAt: [0, 0, 0],
     },
     morphTarget: 'humanCluster',
-    visibleSystems: { ...hidden, particles: true, earth: true, satellites: true, networkArcs: true },
+    visibleSystems: { ...hidden, particles: true, earth: true, satellites: true, countryBeacons: true },
     text: ['Inclusion', 'Sustainability', 'Women in Tech', 'Youth', 'Diversity', 'Community'],
     cards: [
       { title: 'WE', body: 'Empowering women across every market.' },
@@ -290,7 +290,7 @@ export const CHAPTERS: ChapterConfig[] = [
       endLookAt: [0, 0, 0],
     },
     morphTarget: 'earthReform',
-    visibleSystems: { ...hidden, particles: true, earth: true, satellites: true, networkArcs: true },
+    visibleSystems: { ...hidden, particles: true, earth: true, satellites: true, countryBeacons: true },
     text: ['Progress with Purpose.', '', 'Powering progress.', 'Enabling possibilities.', 'Connecting communities.'],
   },
 ];

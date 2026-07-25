@@ -4,7 +4,7 @@ import { EffectComposer, Bloom } from '@react-three/postprocessing';
 import { MorphingParticleField } from '@/three/particles/MorphingParticleField';
 import { CameraRig } from '@/three/camera/CameraRig';
 import { EarthSystem } from '@/three/earth/EarthSystem';
-import { NetworkArcSystem } from '@/three/network/NetworkArcSystem';
+import { CountryBeaconSystem } from '@/three/network/CountryBeaconSystem';
 import { SatelliteSystem } from '@/three/satellites/SatelliteSystem';
 import { LightingRig } from '@/three/lights/LightingRig';
 import { PerformanceMonitor } from '@/three/utils/PerformanceMonitor';
@@ -38,7 +38,7 @@ export const ExperienceScene = () => {
       <LightingRig />
       <MorphingParticleField />
       <EarthSystem />
-      <NetworkArcSystem />
+      <CountryBeaconSystem />
       <SatelliteSystem />
 
       {/* Skipped on 'low' tier — the particle shader already boosts

@@ -10,6 +10,15 @@ import { getChapterStart } from '@/constants/chapters';
 
 export const EARTH_RADIUS = 3;
 
+/**
+ * Radians/second of Earth's own day-side rotation. Exported so anything
+ * anchored to a specific point on the surface (CountryBeaconSystem's
+ * beacons) can apply the exact same rotation to itself — otherwise Earth's
+ * texture spins underneath a beacon left in fixed world space, and the lit
+ * point visibly drifts away from the actual country within moments.
+ */
+export const EARTH_ROTATION_SPEED = 0.03;
+
 const EARTH_CHAPTER_START = getChapterStart('earth');
 
 /**
@@ -78,7 +87,7 @@ export const EarthSystem = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isLoaded]);
 
-  useFrame((_, delta) => {
+  useFrame((state, delta) => {
     const progress = useScrollStore.getState().canvasProgress;
     const opacity = sampleKeyframes(progress, OPACITY_KEYFRAMES);
 
@@ -88,7 +97,13 @@ export const EarthSystem = () => {
     // Kept permanently visible (opacity alone hides it) — toggling `.visible`
     // would re-defer the texture upload above until the object re-enters the
     // render list, undoing the fix.
-    group.rotation.y += delta * 0.03;
+    //
+    // Set directly from elapsed time (rather than accumulated via `+= delta
+    // * speed` every frame) so it's an exact, reproducible function of time —
+    // CountryBeaconSystem computes the identical value independently to stay
+    // in sync, which an accumulator drifting from per-frame float rounding
+    // couldn't guarantee.
+    group.rotation.y = state.clock.elapsedTime * EARTH_ROTATION_SPEED;
 
     if (cloudsRef.current) {
       cloudsRef.current.rotation.y += delta * 0.045;
