@@ -5,8 +5,10 @@ import { ThreeProvider } from '@/providers/ThreeProvider';
 import { ChapterText } from '@/components/html/ChapterText';
 import { ChapterCards } from '@/components/html/ChapterCards';
 import { Hero } from '@/components/html/Hero';
+import { ScrollCue } from '@/components/html/ScrollCue';
 import { Footer } from '@/components/html/Footer';
 import { Navbar } from '@/components/html/Navbar';
+import { LoadingScreen } from '@/components/html/LoadingScreen';
 import { TOTAL_SCROLL_VH } from '@/constants/scroll';
 
 export default function Home() {
@@ -21,8 +23,10 @@ export default function Home() {
             </ThreeProvider>
 
             {/* 2D HTML Overlay Layer */}
+            <LoadingScreen />
             <Navbar />
             <Hero />
+            <ScrollCue />
             <ChapterText />
             <ChapterCards />
 

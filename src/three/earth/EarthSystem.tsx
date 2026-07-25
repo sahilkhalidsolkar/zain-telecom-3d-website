@@ -4,6 +4,7 @@ import { useEffect, useRef } from 'react';
 import { useFrame, useThree } from '@react-three/fiber';
 import * as THREE from 'three';
 import { useAssets } from '@/hooks/useAssets';
+import { useAssetStore } from '@/store/useAssetStore';
 import { useScrollStore } from '@/store/useScrollStore';
 import { sampleKeyframes } from '@/utils/math';
 import { getChapterStart } from '@/constants/chapters';
@@ -84,6 +85,11 @@ export const EarthSystem = () => {
         if (texture) gl.initTexture(texture);
       }
     );
+    // gl.initTexture uploads synchronously (it's what was causing the
+    // mid-scroll stall this whole effect exists to avoid), so by the time
+    // the loop above returns, the actual GPU-bound work is done — this is
+    // the real "ready" signal LoadingScreen should wait for, not `isLoaded`.
+    useAssetStore.getState().setSceneReady(true);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isLoaded]);
 
