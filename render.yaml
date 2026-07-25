@@ -1,16 +1,29 @@
 # Render Blueprint — https://render.com/docs/blueprint-spec
-# Lets Render provision this service reproducibly (Dashboard -> New -> Blueprint,
-# point it at this repo) instead of manually clicking through build/start
-# command fields. `.node-version` (repo root) already pins Node 22; the
-# `packageManager` field in package.json pins the exact pnpm version, which
-# `corepack enable` below picks up automatically.
+# Optional: Dashboard -> New -> Blueprint, point it at this repo, and Render
+# provisions this exactly. Equally valid to skip this and create the Static
+# Site by hand (New -> Static Site) using the same build command / publish
+# directory shown below — `.node-version` (repo root) pins Node 22 either
+# way, and `packageManager` in package.json pins the exact pnpm version for
+# `corepack enable` to activate.
 services:
   - type: web
     name: zain-3d-website
-    runtime: node
-    plan: starter
-    region: oregon
+    runtime: static
     buildCommand: corepack enable && pnpm install --frozen-lockfile && pnpm build
-    startCommand: pnpm start
-    healthCheckPath: /
-    autoDeploy: true
+    staticPublishPath: ./out
+    headers:
+      - path: /*
+        name: X-Content-Type-Options
+        value: nosniff
+      - path: /*
+        name: X-Frame-Options
+        value: SAMEORIGIN
+      - path: /*
+        name: Referrer-Policy
+        value: strict-origin-when-cross-origin
+      - path: /*
+        name: Permissions-Policy
+        value: "camera=(), microphone=(), geolocation=()"
+      - path: /assets/*
+        name: Cache-Control
+        value: public, max-age=86400, stale-while-revalidate=604800

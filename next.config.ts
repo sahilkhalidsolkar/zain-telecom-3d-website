@@ -1,8 +1,17 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  // Static export: this app is 100% client components with no API routes,
+  // middleware, or server-side data fetching, so it needs no Node server at
+  // runtime — `pnpm build` produces a plain `out/` folder of static files,
+  // which is what makes Render's (cheaper, simpler) Static Site hosting an
+  // option here instead of a Web Service.
+  output: "export",
+
   // Removes the `X-Powered-By: Next.js` response header — no functional
-  // benefit to advertising the framework in production.
+  // benefit to advertising the framework. (Static export has no server to
+  // actually send response headers from; this only matters if `next dev`/
+  // `next start` is ever used locally.)
   poweredByHeader: false,
 
   // Allows accessing the dev server (and its HMR websocket) from another
@@ -11,30 +20,13 @@ const nextConfig: NextConfig = {
   // Only applies to `next dev`, harmless in production.
   allowedDevOrigins: ["10.111.217.229"],
 
-  async headers() {
-    return [
-      {
-        source: "/:path*",
-        headers: [
-          { key: "X-Content-Type-Options", value: "nosniff" },
-          { key: "X-Frame-Options", value: "SAMEORIGIN" },
-          { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
-          { key: "Permissions-Policy", value: "camera=(), microphone=(), geolocation=()" },
-        ],
-      },
-      {
-        // Unlike /_next/static/ (already immutable-cached by Next itself),
-        // files served straight from /public — the Earth textures, satellite
-        // model, logo — default to `max-age=0`, so every repeat visit
-        // re-downloads them from origin. A day of caching (not a full year
-        // "immutable", since these filenames have no content hash — if a
-        // texture is ever swapped at the same path, that's still a
-        // reasonable staleness window) meaningfully helps repeat visits.
-        source: "/assets/:path*",
-        headers: [{ key: "Cache-Control", value: "public, max-age=86400, stale-while-revalidate=604800" }],
-      },
-    ];
-  },
+  // There used to be a `headers()` config here (security headers + a
+  // longer Cache-Control for /assets/*) — removed because Next.js does not
+  // apply `headers()`/`redirects()`/`rewrites()` to a static export
+  // (confirmed: `next build` still succeeds but prints a warning and the
+  // headers are silently never sent). A Static Site host serves the `out/`
+  // folder directly with no Node process left to apply them from — the
+  // equivalent headers need to be configured on the host itself instead.
 };
 
 export default nextConfig;
