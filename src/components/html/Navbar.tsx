@@ -26,7 +26,7 @@ import { TOTAL_SCROLL_VH } from '@/constants/scroll';
 const NAV_LABELS: Record<string, string> = {
   signal: 'Home',
   birth: 'Connectivity',
-  earth: 'Earth',
+  earth: 'Global',
   expansion: 'Expansion',
   livingNetwork: 'Network',
   transformation: 'TechCo',
