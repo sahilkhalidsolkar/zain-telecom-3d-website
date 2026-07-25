@@ -3,6 +3,8 @@ import { AnimationProvider } from '@/providers/AnimationProvider';
 import { AssetProvider } from '@/providers/AssetProvider';
 import { ThreeProvider } from '@/providers/ThreeProvider';
 import { ChapterText } from '@/components/html/ChapterText';
+import { ChapterCards } from '@/components/html/ChapterCards';
+import { Hero } from '@/components/html/Hero';
 import { Footer } from '@/components/html/Footer';
 import { TOTAL_SCROLL_VH } from '@/constants/scroll';
 
@@ -18,7 +20,9 @@ export default function Home() {
             </ThreeProvider>
 
             {/* 2D HTML Overlay Layer */}
+            <Hero />
             <ChapterText />
+            <ChapterCards />
 
             {/*
               Scroll height forcing container. Because the canvas is fixed,

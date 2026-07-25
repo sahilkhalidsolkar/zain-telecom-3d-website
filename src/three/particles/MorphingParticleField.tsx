@@ -7,7 +7,7 @@ import { useScrollStore } from '@/store/useScrollStore';
 import { usePerformanceStore } from '@/store/usePerformanceStore';
 import { buildMorphTargets } from './morphTargets';
 import { lerp, mapRange } from '@/utils/math';
-import type { MorphTargetKey } from '@/constants/chapters';
+import { getChapterStart, type MorphTargetKey } from '@/constants/chapters';
 import type { QualityTier } from '@/types/performance';
 
 /**
@@ -18,17 +18,18 @@ import type { QualityTier } from '@/types/performance';
  * different objects. Keyframe `at` values line up with the chapter
  * boundaries in `chapters.ts` where each transformation begins.
  *
- * The 'dissolvedToEcosystem' shape (Ch6/7) is deliberately not used yet —
- * without the actual labeled ecosystem-node system built (a later phase),
- * particles alone clumping into that shape just reads as messy floating
- * blobs. Particles stay in the network-sphere shell through Ch6/7 instead,
- * matching Earth/arcs/satellites staying visible through those chapters too.
+ * Particles stay in the network-sphere shell through Ch6/7 (Transformation,
+ * Innovation) rather than dissolving into a separate ecosystem shape — a 3D
+ * "ecosystem node" cluster was tried and removed (billboard/scale issues,
+ * see ExperienceScene's comment); those chapters' content is now carried by
+ * the glassmorphism cards instead, with Earth/particles/arcs/satellites
+ * staying the visual constant throughout.
  */
 const MORPH_KEYFRAMES: { key: MorphTargetKey; at: number; colorMix: number }[] = [
   { key: 'scattered', at: 0, colorMix: 0 },
-  { key: 'networkSphere', at: 2 / 9, colorMix: 0 },
-  { key: 'humanCluster', at: 7 / 9, colorMix: 1 },
-  { key: 'earthReform', at: 8 / 9, colorMix: 0 },
+  { key: 'networkSphere', at: getChapterStart('earth'), colorMix: 0 },
+  { key: 'humanCluster', at: getChapterStart('humanImpact'), colorMix: 1 },
+  { key: 'earthReform', at: getChapterStart('purpose'), colorMix: 0 },
 ];
 
 // Halved so the *pulse*2.0 boost below peaks at the intended hue instead of
@@ -130,7 +131,8 @@ export const MorphingParticleField = ({ count: countOverride }: MorphingParticle
 
   return (
     <instancedMesh ref={meshRef} args={[undefined, undefined, count]}>
-      <icosahedronGeometry args={[0.045, 0]} />
+      {/* Small, dust-like — previously 0.045 read as chunky faceted hexagons rather than fine particles. */}
+      <icosahedronGeometry args={[0.014, 0]} />
       <primitive object={shaderMaterial} attach="material" />
     </instancedMesh>
   );

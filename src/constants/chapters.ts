@@ -3,11 +3,14 @@
  *
  * Responsibility:
  * Single source of truth for the 9-chapter cinematic narrative. Every visual
- * system (particles, Earth, camera, network arcs, ecosystem nodes, city) and
- * every 2D text overlay derives its state from this configuration rather than
+ * system (particles, Earth, camera, network arcs, satellites) and every 2D
+ * text overlay derives its state from this configuration rather than
  * running its own scroll logic, so the whole experience stays choreographed
  * from one place. Ranges are fractions (0-1) of the total scroll distance
- * defined by TOTAL_SCROLL_VH in `scroll.ts`.
+ * defined by TOTAL_SCROLL_VH in `scroll.ts`. Ranges are deliberately uneven,
+ * not equal ninths — chapters with more glassmorphism cards to cycle through
+ * (see `cards` below) get proportionally more scroll distance so each card
+ * has room to actually be read before the next one replaces it.
  */
 
 export type ChapterId =
@@ -21,12 +24,7 @@ export type ChapterId =
   | 'humanImpact'
   | 'purpose';
 
-export type MorphTargetKey =
-  | 'scattered'
-  | 'networkSphere'
-  | 'dissolvedToEcosystem'
-  | 'humanCluster'
-  | 'earthReform';
+export type MorphTargetKey = 'scattered' | 'networkSphere' | 'humanCluster' | 'earthReform';
 
 export type CameraMoveType =
   | 'dolly'
@@ -69,8 +67,11 @@ export interface VisibleSystems {
   earth: boolean;
   satellites: boolean;
   networkArcs: boolean;
-  ecosystemNodes: boolean;
-  city: boolean;
+}
+
+export interface ChapterCard {
+  title: string;
+  body: string;
 }
 
 export interface ChapterConfig {
@@ -81,6 +82,14 @@ export interface ChapterConfig {
   morphTarget: MorphTargetKey;
   visibleSystems: VisibleSystems;
   text: string[];
+  /**
+   * Glassmorphism data cards (rendered by `ChapterCards`), cycling one at a
+   * time as local scroll progress advances. Only populated for chapters with
+   * real structured data to show (countries, stats, ecosystem brands, DEI
+   * programs) — deliberately omitted elsewhere so cards read as a deliberate
+   * device, not a template applied everywhere.
+   */
+  cards?: ChapterCard[];
 }
 
 const hidden: VisibleSystems = {
@@ -88,15 +97,13 @@ const hidden: VisibleSystems = {
   earth: false,
   satellites: false,
   networkArcs: false,
-  ecosystemNodes: false,
-  city: false,
 };
 
 export const CHAPTERS: ChapterConfig[] = [
   {
     id: 'signal',
     title: 'The Beginning',
-    range: [0, 1 / 9],
+    range: [0, 2 / 23],
     camera: {
       motion: 'linear',
       type: 'dolly',
@@ -112,7 +119,7 @@ export const CHAPTERS: ChapterConfig[] = [
   {
     id: 'birth',
     title: 'Birth of Connectivity',
-    range: [1 / 9, 2 / 9],
+    range: [2 / 23, 4 / 23],
     camera: {
       motion: 'orbital',
       type: 'orbit',
@@ -129,7 +136,7 @@ export const CHAPTERS: ChapterConfig[] = [
   {
     id: 'earth',
     title: 'Earth Emerges',
-    range: [2 / 9, 3 / 9],
+    range: [4 / 23, 6 / 23],
     camera: {
       motion: 'orbital',
       type: 'orbit',
@@ -146,7 +153,7 @@ export const CHAPTERS: ChapterConfig[] = [
   {
     id: 'expansion',
     title: 'Expansion Across the Region',
-    range: [3 / 9, 4 / 9],
+    range: [6 / 23, 10 / 23],
     camera: {
       motion: 'orbital',
       type: 'orbit',
@@ -159,11 +166,22 @@ export const CHAPTERS: ChapterConfig[] = [
     morphTarget: 'networkSphere',
     visibleSystems: { ...hidden, particles: true, earth: true, satellites: true, networkArcs: true },
     text: ['From one nation...', '', 'to eight markets.', '', 'Connecting millions across', 'the Middle East and Africa.'],
+    cards: [
+      { title: 'Kuwait', body: 'Est. 1983 — the region’s first mobile operator.' },
+      { title: 'Bahrain', body: 'Expanding the network across the Gulf.' },
+      { title: 'Jordan', body: 'Connecting the Levant.' },
+      { title: 'Iraq', body: 'Serving one of the region’s largest markets.' },
+      { title: 'Saudi Arabia', body: 'Reaching the Kingdom’s growing digital economy.' },
+      { title: 'Sudan', body: 'Bringing connectivity to East Africa.' },
+      { title: 'South Sudan', body: 'Extending the network further south.' },
+      { title: 'Morocco', body: 'Completing the reach across North Africa.' },
+      { title: '8 Markets. One Network.', body: 'Connecting millions across the Middle East and Africa.' },
+    ],
   },
   {
     id: 'livingNetwork',
     title: 'The Living Network',
-    range: [4 / 9, 5 / 9],
+    range: [10 / 23, 13 / 23],
     camera: {
       motion: 'orbital',
       type: 'orbit',
@@ -176,56 +194,69 @@ export const CHAPTERS: ChapterConfig[] = [
     morphTarget: 'networkSphere',
     visibleSystems: { ...hidden, particles: true, earth: true, satellites: true, networkArcs: true },
     text: ['51.2 Million Customers', '9,000 Employees', 'Founded in 1983', 'Operations in Eight Countries'],
+    cards: [
+      { title: '51.2M', body: 'Total Active Customers' },
+      { title: '9,000+', body: 'Employees Across the Region' },
+      { title: '1983', body: 'Founded in Kuwait' },
+      { title: '8', body: 'Markets Across the Middle East & Africa' },
+    ],
   },
   {
     id: 'transformation',
     title: 'Transformation into a TechCo',
-    range: [5 / 9, 6 / 9],
+    range: [13 / 23, 16 / 23],
     camera: {
-      motion: 'linear',
-      type: 'dive',
-      // Departs Earth (still visible behind) and heads toward the
-      // ecosystem core/nodes, which sit offset at z ≈ -10 rather than
-      // overlapping Earth's own origin.
-      startPosition: [6, 2, 6],
-      endPosition: [0, 1, -6],
-      startLookAt: [0, 0, 0],
-      endLookAt: [0, 0, -9],
+      motion: 'orbital',
+      type: 'orbit',
+      // Continues the same Earth orbit from livingNetwork's end angle (260°)
+      // rather than diving toward a 3D ecosystem/city that no longer exists
+      // — Earth and the network stay the visual focus; the 7 ecosystem
+      // brands are carried entirely by the glassmorphism cards below.
+      radius: 7.5,
+      height: 1.8,
+      startAngleDeg: 260,
+      endAngleDeg: 310,
+      lookAt: [0, 0, 0],
     },
     morphTarget: 'networkSphere',
-    visibleSystems: { ...hidden, particles: true, earth: true, satellites: true, networkArcs: true, ecosystemNodes: true },
+    visibleSystems: { ...hidden, particles: true, earth: true, satellites: true, networkArcs: true },
     text: ['Beyond telecommunications.', '', 'Building', 'a technology ecosystem.'],
+    // Descriptors are inferred from the brand names, not confirmed by the
+    // zain.com crawl (docs/zain-content/) — flagged for fact-check before
+    // this ships anywhere public-facing.
+    cards: [
+      { title: 'ZainTECH', body: 'Digital & ICT solutions for enterprise.' },
+      { title: 'ZOI', body: 'Zain Omantel International — wholesale & roaming.' },
+      { title: 'TASC Towers', body: 'Telecom tower infrastructure.' },
+      { title: 'Dizlee', body: 'Fintech & digital payments.' },
+      { title: 'Zain Esports', body: 'Gaming & esports ecosystem.' },
+      { title: 'ZAINIAC', body: 'AI & innovation lab.' },
+      { title: 'Global M2M', body: 'IoT & machine-to-machine connectivity.' },
+    ],
   },
   {
     id: 'innovation',
     title: 'Innovation',
-    range: [6 / 9, 7 / 9],
+    range: [16 / 23, 18 / 23],
     camera: {
-      motion: 'linear',
-      type: 'flythrough',
-      // Continues straight on from transformation's end position/look-at —
-      // flying past the ecosystem core into the city further out.
-      startPosition: [0, 1, -6],
-      endPosition: [0, 1, -16],
-      startLookAt: [0, 0, -9],
-      endLookAt: [0, 0, -24],
+      motion: 'orbital',
+      type: 'orbit',
+      // Continues the orbit from transformation's end angle (310°) — no 3D
+      // city; the AI/Cloud/etc. keywords are 2D text only.
+      radius: 8,
+      height: 2,
+      startAngleDeg: 310,
+      endAngleDeg: 360,
+      lookAt: [0, 0, 0],
     },
     morphTarget: 'networkSphere',
-    visibleSystems: {
-      ...hidden,
-      particles: true,
-      earth: true,
-      satellites: true,
-      networkArcs: true,
-      ecosystemNodes: true,
-      city: true,
-    },
+    visibleSystems: { ...hidden, particles: true, earth: true, satellites: true, networkArcs: true },
     text: ['Artificial Intelligence', 'Cloud', 'Enterprise', 'Cybersecurity', 'Fintech', 'Gaming', 'Digital Infrastructure'],
   },
   {
     id: 'humanImpact',
     title: 'Human Impact',
-    range: [7 / 9, 8 / 9],
+    range: [18 / 23, 21 / 23],
     camera: {
       motion: 'orbital',
       type: 'circle',
@@ -238,11 +269,18 @@ export const CHAPTERS: ChapterConfig[] = [
     morphTarget: 'humanCluster',
     visibleSystems: { ...hidden, particles: true, earth: true, satellites: true, networkArcs: true },
     text: ['Inclusion', 'Sustainability', 'Women in Tech', 'Youth', 'Diversity', 'Community'],
+    cards: [
+      { title: 'WE', body: 'Empowering women across every market.' },
+      { title: 'ZY — Zain Youth', body: 'Investing in the next generation.' },
+      { title: 'WE ABLE', body: 'Building disability inclusion by 2030.' },
+      { title: 'BE WELL', body: 'Employee wellbeing & work-life balance.' },
+      { title: 'IDEU', body: 'Inclusion, Diversity & Equity University.' },
+    ],
   },
   {
     id: 'purpose',
     title: 'Progress with Purpose',
-    range: [8 / 9, 1],
+    range: [21 / 23, 1],
     camera: {
       motion: 'linear',
       type: 'pullback',
@@ -269,5 +307,17 @@ export const EXPANSION_COUNTRIES = [
   { name: 'Morocco', lat: 33.9716, lon: -6.8498 },
 ] as const;
 
-/** Zain's technology-ecosystem businesses, orbiting the core in Chapter 6/7. */
-export const ECOSYSTEM_NODES = ['ZainTECH', 'ZOI', 'TASC Towers', 'BEDE', 'Tamam', 'Dizlee', 'Yaqoot', 'Oodi'] as const;
+/**
+ * Looks up where a chapter starts (as a global scroll-progress fraction).
+ * Other systems that need to key off a specific chapter boundary (particle
+ * morph keyframes, Earth's fade-in, the Human Impact lighting shift) should
+ * call this instead of hardcoding the fraction directly — chapter `range`s
+ * are intentionally uneven (card-heavy chapters get more scroll distance so
+ * their cards don't cycle too fast), so a hardcoded copy of a boundary will
+ * silently drift out of sync the next time ranges are rebalanced.
+ */
+export const getChapterStart = (id: ChapterId): number => {
+  const chapter = CHAPTERS.find((c) => c.id === id);
+  if (!chapter) throw new Error(`Unknown chapter id: ${id}`);
+  return chapter.range[0];
+};

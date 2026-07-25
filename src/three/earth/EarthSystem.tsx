@@ -6,8 +6,11 @@ import * as THREE from 'three';
 import { useAssets } from '@/hooks/useAssets';
 import { useScrollStore } from '@/store/useScrollStore';
 import { sampleKeyframes } from '@/utils/math';
+import { getChapterStart } from '@/constants/chapters';
 
 export const EARTH_RADIUS = 3;
+
+const EARTH_CHAPTER_START = getChapterStart('earth');
 
 /**
  * Earth's visibility across the whole scroll, as opacity keyframes: hidden
@@ -19,8 +22,8 @@ export const EARTH_RADIUS = 3;
  */
 const OPACITY_KEYFRAMES = [
   { at: 0, value: 0 },
-  { at: 2 / 9, value: 0 },
-  { at: 2 / 9 + 0.02, value: 1 },
+  { at: EARTH_CHAPTER_START, value: 0 },
+  { at: EARTH_CHAPTER_START + 0.02, value: 1 },
   { at: 1, value: 1 },
 ];
 
@@ -92,6 +95,13 @@ export const EarthSystem = () => {
     }
     if (dayMaterialRef.current) {
       dayMaterialRef.current.opacity = opacity;
+      // A transparent mesh still writes to the depth buffer by default even
+      // at opacity 0 — since this mesh is now permanently in the render list
+      // (see the texture pre-upload note above), that was carving a
+      // Earth-shaped hole out of whatever sat behind it (particles) for the
+      // entire time Earth was meant to be invisible, before Ch3 even starts.
+      // Only write depth once Earth is actually meant to occlude things.
+      dayMaterialRef.current.depthWrite = opacity > 0.5;
     }
     if (cloudsMaterialRef.current) {
       cloudsMaterialRef.current.opacity = opacity * 0.4;
@@ -123,6 +133,7 @@ export const EarthSystem = () => {
           metalness={0}
           transparent
           opacity={0}
+          depthWrite={false}
         />
       </mesh>
       <mesh ref={cloudsRef} scale={1.008} frustumCulled={false}>

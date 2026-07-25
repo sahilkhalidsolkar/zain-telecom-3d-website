@@ -5,6 +5,10 @@ import { useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
 import { useScrollStore } from '@/store/useScrollStore';
 import { sampleKeyframes } from '@/utils/math';
+import { getChapterStart } from '@/constants/chapters';
+
+const HUMAN_IMPACT_START = getChapterStart('humanImpact');
+const PURPOSE_START = getChapterStart('purpose');
 
 /**
  * Warmth ramps up entering Human Impact (Ch8) — "purple fades to warm
@@ -13,10 +17,10 @@ import { sampleKeyframes } from '@/utils/math';
  */
 const WARMTH_KEYFRAMES = [
   { at: 0, value: 0 },
-  { at: 7 / 9 - 0.02, value: 0 },
-  { at: 7 / 9 + 0.03, value: 1 },
-  { at: 8 / 9 - 0.02, value: 1 },
-  { at: 8 / 9 + 0.03, value: 0 },
+  { at: HUMAN_IMPACT_START - 0.02, value: 0 },
+  { at: HUMAN_IMPACT_START + 0.03, value: 1 },
+  { at: PURPOSE_START - 0.02, value: 1 },
+  { at: PURPOSE_START + 0.03, value: 0 },
   { at: 1, value: 0 },
 ];
 
