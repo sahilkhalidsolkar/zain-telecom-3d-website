@@ -13,7 +13,7 @@ import { earthRotationState } from '@/three/earth/earthRotation';
 const SURFACE_RADIUS = EARTH_RADIUS * 1.01;
 const BEAM_HEIGHT = 0.65;
 const BEAM_RADIUS = 0.018;
-const RED = new THREE.Color('#ff1a3c');
+const BEAM_COLOR = new THREE.Color('#00f3ff'); // Neon Cyan for cinematic contrast
 
 const BEAM_VERTEX = `
   varying vec2 vUv;
@@ -122,7 +122,7 @@ export const CountryBeaconSystem = () => {
               if (el) beamRefs.current[i] = el;
             }}
           >
-            <cylinderGeometry args={[BEAM_RADIUS, BEAM_RADIUS, BEAM_HEIGHT, 12, 1, true]} />
+            <cylinderGeometry args={[0, BEAM_RADIUS * 1.5, BEAM_HEIGHT, 12, 1, true]} />
             <shaderMaterial
               ref={(el) => {
                 if (el) beamMaterialRefs.current[i] = el as THREE.ShaderMaterial;
@@ -131,7 +131,7 @@ export const CountryBeaconSystem = () => {
               depthWrite={false}
               blending={THREE.AdditiveBlending}
               side={THREE.DoubleSide}
-              uniforms={{ uColor: { value: RED.clone() }, uOpacity: { value: 0 }, uTime: { value: 0 } }}
+              uniforms={{ uColor: { value: BEAM_COLOR.clone() }, uOpacity: { value: 0 }, uTime: { value: 0 } }}
               vertexShader={BEAM_VERTEX}
               fragmentShader={BEAM_FRAGMENT}
             />

@@ -5,8 +5,23 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { CSUITE, BOARD, MARKET_CEOS, IDE_CHAMPIONS, type Leader, type LeadershipTab } from '@/constants/leadership';
 
 // ─── Data ──────────────────────────────────────────────────────────────────
-const NAV_LINKS = ['Personal', 'Business', 'ZainTECH', 'Investor Relations', 'Sustainability', 'Careers', 'Contact'];
-const SOCIAL_LINKS = ['Facebook', 'Instagram', 'X', 'LinkedIn'];
+// All URLs verified from scraped zain.com pages (docs/zain-content/pages/).
+const NAV_LINKS: { label: string; href: string }[] = [
+  { label: 'Personal',           href: 'https://www.kw.zain.com/en' },
+  { label: 'Business',           href: 'https://zain.com/en/m2m' },
+  { label: 'ZainTECH',          href: 'https://zaintech.com/' },
+  { label: 'Investor Relations', href: 'https://zain.com/en/investor-relations' },
+  { label: 'Sustainability',     href: 'https://zain.com/en/sustainability' },
+  { label: 'Careers',            href: 'https://careers.zain.com/' },
+  { label: 'Contact',            href: 'https://zain.com/en/media-center#contact-us' },
+];
+
+const SOCIAL_LINKS: { label: string; href: string }[] = [
+  { label: 'Facebook',  href: 'https://www.facebook.com/zain/' },
+  { label: 'Instagram', href: 'https://www.instagram.com/zaingroup/' },
+  { label: 'X',         href: 'https://www.twitter.com/zain/' },
+  { label: 'LinkedIn',  href: 'https://www.linkedin.com/company/zain' },
+];
 
 const TABS: { id: LeadershipTab; label: string }[] = [
   { id: 'leadership', label: 'C-Suite' },
@@ -277,17 +292,29 @@ export const Footer = () => {
         <img src="/assets/logos/zain.svg" alt="Zain" className="h-7 w-auto brightness-0 invert opacity-60" />
 
         <nav className="flex flex-wrap justify-center gap-x-6 gap-y-2 text-xs text-white/50">
-          {NAV_LINKS.map((link) => (
-            <a key={link} href="#" className="uppercase tracking-wider transition-colors hover:text-white/80">
-              {link}
+          {NAV_LINKS.map(({ label, href }) => (
+            <a
+              key={label}
+              href={href}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="uppercase tracking-wider transition-colors hover:text-white/80"
+            >
+              {label}
             </a>
           ))}
         </nav>
 
         <div className="flex gap-5 text-xs text-white/35">
-          {SOCIAL_LINKS.map((link) => (
-            <a key={link} href="#" className="uppercase tracking-wider transition-colors hover:text-white/70">
-              {link}
+          {SOCIAL_LINKS.map(({ label, href }) => (
+            <a
+              key={label}
+              href={href}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="uppercase tracking-wider transition-colors hover:text-white/70"
+            >
+              {label}
             </a>
           ))}
         </div>

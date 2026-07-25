@@ -7,7 +7,7 @@
   --color-primary: var(--color-primary);
   --color-secondary: var(--color-secondary);
   --color-accent: var(--color-accent);
-  --font-sans: var(--font-geist-sans);
+  --font-sans: var(--font-outfit);
   --font-mono: var(--font-geist-mono);
 }
 
@@ -29,7 +29,7 @@ body {
   overflow-x: hidden;
   background-color: var(--color-primary);
   color: var(--color-secondary);
-  font-family: var(--font-geist-sans), Arial, Helvetica, sans-serif;
+  font-family: var(--font-outfit), Arial, Helvetica, sans-serif;
   -webkit-font-smoothing: antialiased;
 }
 
