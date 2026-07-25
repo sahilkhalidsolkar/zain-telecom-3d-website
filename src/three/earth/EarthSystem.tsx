@@ -6,19 +6,11 @@ import * as THREE from 'three';
 import { useAssets } from '@/hooks/useAssets';
 import { useAssetStore } from '@/store/useAssetStore';
 import { useScrollStore } from '@/store/useScrollStore';
-import { sampleKeyframes } from '@/utils/math';
+import { lerpAngle, sampleKeyframes } from '@/utils/math';
 import { getChapterStart } from '@/constants/chapters';
+import { computeTargetEarthRotationY, earthRotationState } from '@/three/earth/earthRotation';
 
 export const EARTH_RADIUS = 3;
-
-/**
- * Radians/second of Earth's own day-side rotation. Exported so anything
- * anchored to a specific point on the surface (CountryBeaconSystem's
- * beacons) can apply the exact same rotation to itself — otherwise Earth's
- * texture spins underneath a beacon left in fixed world space, and the lit
- * point visibly drifts away from the actual country within moments.
- */
-export const EARTH_ROTATION_SPEED = 0.03;
 
 const EARTH_CHAPTER_START = getChapterStart('earth');
 
@@ -104,12 +96,17 @@ export const EarthSystem = () => {
     // would re-defer the texture upload above until the object re-enters the
     // render list, undoing the fix.
     //
-    // Set directly from elapsed time (rather than accumulated via `+= delta
-    // * speed` every frame) so it's an exact, reproducible function of time —
-    // CountryBeaconSystem computes the identical value independently to stay
-    // in sync, which an accumulator drifting from per-frame float rounding
-    // couldn't guarantee.
-    group.rotation.y = state.clock.elapsedTime * EARTH_ROTATION_SPEED;
+    // Smoothly turns toward whatever computeTargetEarthRotationY says Earth
+    // should be facing right now (normally a constant spin; during Expansion,
+    // whichever country's beacon just lit up — see earthRotation.ts) rather
+    // than snapping straight to it, for a graceful "the globe turns to
+    // reveal it" motion instead of a jump cut. earthRotationState is the
+    // single shared value CountryBeaconSystem/CoverageRingSystem read too, so
+    // everything anchored to the surface rotates in lockstep with Earth
+    // itself.
+    const targetRotationY = computeTargetEarthRotationY(progress, state.clock.elapsedTime);
+    earthRotationState.value = lerpAngle(earthRotationState.value, targetRotationY, 0.04);
+    group.rotation.y = earthRotationState.value;
 
     if (cloudsRef.current) {
       cloudsRef.current.rotation.y += delta * 0.045;

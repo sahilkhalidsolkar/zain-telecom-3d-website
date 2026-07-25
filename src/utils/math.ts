@@ -34,6 +34,22 @@ export const degreesToRadians = (degrees: number) => (degrees * Math.PI) / 180;
 
 export const radiansToDegrees = (radians: number) => (radians * 180) / Math.PI;
 
+/** Wraps an angle (radians) to the range [-PI, PI). */
+export const normalizeAngle = (angle: number) => {
+  const twoPi = Math.PI * 2;
+  return angle - twoPi * Math.floor((angle + Math.PI) / twoPi);
+};
+
+/**
+ * Like `lerp`, but for angles (radians): always takes the shortest angular
+ * path, so a target that's just past the -PI/PI wraparound point doesn't
+ * make whatever it's rotating spin almost a full turn the "wrong" way to
+ * get there.
+ */
+export const lerpAngle = (current: number, target: number, factor: number) => {
+  return current + normalizeAngle(target - current) * factor;
+};
+
 /**
  * Converts a latitude/longitude pair (degrees) to a position on the surface
  * of a sphere of the given radius, using the same convention as the Earth

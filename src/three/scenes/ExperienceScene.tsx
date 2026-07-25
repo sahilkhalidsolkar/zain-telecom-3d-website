@@ -5,7 +5,9 @@ import { MorphingParticleField } from '@/three/particles/MorphingParticleField';
 import { CameraRig } from '@/three/camera/CameraRig';
 import { EarthSystem } from '@/three/earth/EarthSystem';
 import { CountryBeaconSystem } from '@/three/network/CountryBeaconSystem';
+import { CoverageRingSystem } from '@/three/network/CoverageRingSystem';
 import { SatelliteSystem } from '@/three/satellites/SatelliteSystem';
+import { Starfield } from '@/three/background/Starfield';
 import { LightingRig } from '@/three/lights/LightingRig';
 import { PerformanceMonitor } from '@/three/utils/PerformanceMonitor';
 import { usePerformanceStore } from '@/store/usePerformanceStore';
@@ -36,9 +38,11 @@ export const ExperienceScene = () => {
       <PerformanceMonitor />
       <CameraRig />
       <LightingRig />
+      <Starfield />
       <MorphingParticleField />
       <EarthSystem />
       <CountryBeaconSystem />
+      <CoverageRingSystem />
       <SatelliteSystem />
 
       {/* Skipped on 'low' tier — the particle shader already boosts

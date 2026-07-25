@@ -7,7 +7,8 @@ import { EXPANSION_COUNTRIES } from '@/constants/chapters';
 import { getActiveChapter } from '@/three/utils/chapterProgress';
 import { useScrollStore } from '@/store/useScrollStore';
 import { latLongToVector3, mapRange } from '@/utils/math';
-import { EARTH_RADIUS, EARTH_ROTATION_SPEED } from '@/three/earth/EarthSystem';
+import { EARTH_RADIUS } from '@/three/earth/EarthSystem';
+import { earthRotationState } from '@/three/earth/earthRotation';
 
 const SURFACE_RADIUS = EARTH_RADIUS * 1.01;
 const BEAM_HEIGHT = 0.65;
@@ -76,8 +77,11 @@ export const CountryBeaconSystem = () => {
     // space, same as Earth's own geometry — so this group must apply the
     // exact same rotation Earth's mesh does each frame, or the beacons stay
     // fixed in world space while the globe's surface spins underneath them,
-    // drifting off the actual country within moments.
-    group.rotation.y = state.clock.elapsedTime * EARTH_ROTATION_SPEED;
+    // drifting off the actual country within moments. Reads the single
+    // shared value EarthSystem writes (rather than recomputing it) so this
+    // can never drift out of sync with Earth's own (now variable, not a
+    // constant spin — see earthRotation.ts) rotation.
+    group.rotation.y = earthRotationState.value;
 
     const progress = useScrollStore.getState().canvasProgress;
     const { chapter, localProgress } = getActiveChapter(progress);

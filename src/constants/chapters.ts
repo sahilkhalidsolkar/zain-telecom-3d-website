@@ -67,6 +67,9 @@ export interface VisibleSystems {
   earth: boolean;
   satellites: boolean;
   countryBeacons: boolean;
+  /** Expanding 5G "coverage ping" rings — real fact ("5G active in 4
+   * markets"), scoped to the Innovation chapter only. */
+  coverageRings: boolean;
 }
 
 export interface ChapterCard {
@@ -97,6 +100,7 @@ const hidden: VisibleSystems = {
   earth: false,
   satellites: false,
   countryBeacons: false,
+  coverageRings: false,
 };
 
 export const CHAPTERS: ChapterConfig[] = [
@@ -253,7 +257,14 @@ export const CHAPTERS: ChapterConfig[] = [
       lookAt: [0, 0, 0],
     },
     morphTarget: 'networkSphere',
-    visibleSystems: { ...hidden, particles: true, earth: true, satellites: true, countryBeacons: true },
+    visibleSystems: {
+      ...hidden,
+      particles: true,
+      earth: true,
+      satellites: true,
+      countryBeacons: true,
+      coverageRings: true,
+    },
     text: ['Data revenue: 40% of total.', 'Fintech: 28% growth.', '5G: Active across 4 markets.', 'AI-driven solutions.'],
     cards: [
       { title: '5.5G', body: 'Kuwait\'s advanced network — first in the region.' },
@@ -324,6 +335,14 @@ export const EXPANSION_COUNTRIES = [
   { name: 'South Sudan', lat: 4.8517, lon: 31.5825 },
   { name: 'Morocco', lat: 33.9716, lon: -6.8498 },
 ] as const;
+
+/**
+ * The 4 markets with live 5G, per the real crawled fact already used in
+ * Innovation's card copy ("Active in Kuwait, KSA, Bahrain & Jordan") —
+ * `CoverageRingSystem` uses these names to look up coordinates from
+ * `EXPANSION_COUNTRIES` rather than duplicating lat/long here.
+ */
+export const FIVE_G_MARKETS = ['Kuwait', 'Saudi Arabia', 'Bahrain', 'Jordan'] as const;
 
 /**
  * Looks up where a chapter starts (as a global scroll-progress fraction).

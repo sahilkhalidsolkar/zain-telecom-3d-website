@@ -8,10 +8,26 @@ import { getActiveChapter } from '@/three/utils/chapterProgress';
 import { clamp, degreesToRadians, lerp, radiansToDegrees } from '@/utils/math';
 import type { CameraWaypoint } from '@/constants/chapters';
 
+/**
+ * The camera's current angular position (radians) around Earth, for an
+ * orbital-type chapter camera at local progress `t` — `null` for linear
+ * (dolly/dive/flythrough/pullback) chapters, which don't orbit. Exported so
+ * anything anchored to the Earth's surface can compute "is this point
+ * currently facing the camera" without duplicating the orbit math (see
+ * `earthRotation.ts`, which uses this to turn Earth so each country faces
+ * the camera as its beacon lights up).
+ */
+export const getOrbitalAngleRad = (camera: CameraWaypoint, t: number): number | null => {
+  if (camera.motion !== 'orbital') return null;
+  return degreesToRadians(lerp(camera.startAngleDeg, camera.endAngleDeg, t));
+};
+
 const resolveCameraTarget = (camera: CameraWaypoint, t: number, outPosition: Vector3, outLookAt: Vector3) => {
   if (camera.motion === 'orbital') {
-    const angle = degreesToRadians(lerp(camera.startAngleDeg, camera.endAngleDeg, t));
-    outPosition.set(Math.sin(angle) * camera.radius, camera.height, Math.cos(angle) * camera.radius);
+    // Never actually null here — getOrbitalAngleRad only returns null for a
+    // non-orbital camera, which this branch has already ruled out.
+    const orbitalAngle = getOrbitalAngleRad(camera, t) ?? 0;
+    outPosition.set(Math.sin(orbitalAngle) * camera.radius, camera.height, Math.cos(orbitalAngle) * camera.radius);
     outLookAt.set(camera.lookAt[0], camera.lookAt[1], camera.lookAt[2]);
     return;
   }
