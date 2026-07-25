@@ -1,0 +1,16 @@
+# Render Blueprint — https://render.com/docs/blueprint-spec
+# Lets Render provision this service reproducibly (Dashboard -> New -> Blueprint,
+# point it at this repo) instead of manually clicking through build/start
+# command fields. `.node-version` (repo root) already pins Node 22; the
+# `packageManager` field in package.json pins the exact pnpm version, which
+# `corepack enable` below picks up automatically.
+services:
+  - type: web
+    name: zain-3d-website
+    runtime: node
+    plan: starter
+    region: oregon
+    buildCommand: corepack enable && pnpm install --frozen-lockfile && pnpm build
+    startCommand: pnpm start
+    healthCheckPath: /
+    autoDeploy: true
