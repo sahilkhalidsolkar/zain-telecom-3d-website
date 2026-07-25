@@ -32,6 +32,8 @@ export const mapRange = (
 
 export const degreesToRadians = (degrees: number) => (degrees * Math.PI) / 180;
 
+export const radiansToDegrees = (radians: number) => (radians * 180) / Math.PI;
+
 /**
  * Converts a latitude/longitude pair (degrees) to a position on the surface
  * of a sphere of the given radius, using the same convention as the Earth

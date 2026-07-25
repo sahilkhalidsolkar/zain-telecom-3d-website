@@ -9,7 +9,7 @@ const SOCIAL_LINKS = ['Facebook', 'Instagram', 'X', 'LinkedIn'];
  */
 export const Footer = () => {
   return (
-    <footer className="relative z-10 bg-black px-6 py-16 text-white">
+    <footer className="relative z-10 bg-black px-6 py-10 sm:py-16 text-white">
       <div className="mx-auto flex max-w-4xl flex-col items-center gap-8 text-center">
         <span className="text-lg font-light tracking-widest uppercase">Zain</span>
 

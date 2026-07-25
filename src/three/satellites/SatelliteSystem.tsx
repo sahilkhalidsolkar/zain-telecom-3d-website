@@ -18,15 +18,18 @@ interface OrbitConfig {
 const ORBITS: OrbitConfig[] = [
   { radius: EARTH_RADIUS * 1.5, speed: 0.15, tiltDeg: 12, phase: 0 },
   { radius: EARTH_RADIUS * 1.7, speed: -0.11, tiltDeg: 55, phase: 2.1 },
-  { radius: EARTH_RADIUS * 1.9, speed: 0.09, tiltDeg: -30, phase: 4.2 },
 ];
 
-const SATELLITE_SCALE = 0.12;
+const SATELLITE_SCALE = 0.055;
 
 /**
- * A handful of the existing satellite.glb model in slow, independent orbits
+ * A couple of the existing satellite.glb model in slow, independent orbits
  * around the Earth — visible whenever chapter.visibleSystems.satellites is
  * true (Earth Emerges, Expansion, Living Network, Progress with Purpose).
+ * Same size/count on every screen size — orbit radius and scale are already
+ * relative to EARTH_RADIUS, and CameraRig's aspect-adaptive FOV is what
+ * keeps them framed consistently across desktop and mobile, not per-device
+ * scale overrides here.
  */
 export const SatelliteSystem = () => {
   const groupRef = useRef<THREE.Group>(null);

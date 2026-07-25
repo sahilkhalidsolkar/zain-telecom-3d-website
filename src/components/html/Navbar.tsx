@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useScrollStore } from '@/store/useScrollStore';
 import { useChapterProgress } from '@/hooks/useChapterProgress';
@@ -38,7 +38,10 @@ const NAV_LABELS: Record<string, string> = {
 export const Navbar = () => {
   const lenis = useLenis();
   const breakpoint = useBreakpoint();
-  const isMobile = breakpoint === 'mobile';
+  // Tablet also gets the mobile hamburger/drawer, not the inline desktop
+  // nav: 9 chapter links + logo realistically need ~650-750px, which
+  // doesn't fit in a tablet-width (~768px) floating bar alongside the logo.
+  const isMobile = breakpoint !== 'desktop';
 
   const { chapter } = useChapterProgress();
   const activeId = chapter.id;
@@ -55,16 +58,27 @@ export const Navbar = () => {
   // Mobile drawer
   const [drawerOpen, setDrawerOpen] = useState(false);
 
-  // Hide on scroll-down, reveal on scroll-up — same logic for all viewports
-  useEffect(() => {
-    if (Math.abs(velocity) < 0.01) return;
-    setHidden(direction === 1);
-  }, [direction, velocity]);
+  // Hide on scroll-down, reveal on scroll-up — same logic for all viewports.
+  // `direction`/`velocity` are themselves reactive state (from the
+  // useScrollStore subscription above), so Navbar already re-renders on
+  // every change — adjusting `hidden` synchronously during render (React's
+  // sanctioned pattern for deriving state from a prop/state change) avoids
+  // the extra render-then-effect-then-rerender round trip an effect would
+  // add on every scroll tick.
+  const [trackedScroll, setTrackedScroll] = useState({ direction, velocity });
+  if (trackedScroll.direction !== direction || trackedScroll.velocity !== velocity) {
+    setTrackedScroll({ direction, velocity });
+    if (Math.abs(velocity) >= 0.01) {
+      setHidden(direction === 1);
+    }
+  }
 
-  // Close drawer on resize to desktop
-  useEffect(() => {
+  // Close drawer on resize to desktop — same pattern as above.
+  const [trackedIsMobile, setTrackedIsMobile] = useState(isMobile);
+  if (trackedIsMobile !== isMobile) {
+    setTrackedIsMobile(isMobile);
     if (!isMobile) setDrawerOpen(false);
-  }, [isMobile]);
+  }
 
   /** Scroll to a chapter's start position in pixels. */
   const scrollToChapter = useCallback(
