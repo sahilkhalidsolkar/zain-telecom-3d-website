@@ -119,6 +119,30 @@ export const CHAPTERS: ChapterConfig[] = [
     morphTarget: 'scattered',
     visibleSystems: { ...hidden, particles: true },
     text: ['Every connection', 'begins with a signal.', '', 'Kuwait. 1983.', 'The region\'s first mobile operator.'],
+    // Cards give first-time visitors immediate context: who Zain is, what it
+    // does, and how big it is — before the cinematic journey begins.
+    cards: [
+      {
+        title: 'Who We Are',
+        body: 'A leading telecom & TechCo operating across 8 markets in the Middle East & Africa — born in Kuwait in 1983.',
+      },
+      {
+        title: '51.2 Million Customers',
+        body: 'Individual and business customers served across Kuwait, KSA, Bahrain, Iraq, Jordan, Sudan & South Sudan.',
+      },
+      {
+        title: 'What We Offer',
+        body: 'Mobile connectivity · 5G & 5.5G networks · Enterprise ICT · Cloud & cybersecurity · IoT · Fintech · Digital lifestyle.',
+      },
+      {
+        title: 'USD 4 Billion Brand',
+        body: 'One of the region\'s most valued telecom brands, driving the 4WARD – Progress with Purpose strategy.',
+      },
+      {
+        title: 'Beyond Connectivity',
+        body: 'ZainTECH for enterprise AI & cloud · Zain Esports for gaming · ZAINIAC AI super-app · Global M2M for IoT fleets.',
+      },
+    ],
   },
   {
     id: 'birth',
@@ -135,7 +159,7 @@ export const CHAPTERS: ChapterConfig[] = [
     },
     morphTarget: 'scattered',
     visibleSystems: { ...hidden, particles: true },
-    text: ['One signal.', '', 'One vision.', '', 'One network.'],
+    text: ['Born to connect.', '', 'Better Lives.', 'Lasting Connections.'],
   },
   {
     id: 'earth',
