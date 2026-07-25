@@ -11,9 +11,39 @@ import { useLenis } from '@/hooks/useLenis';
  * React state swap + AnimatePresence is enough — no need to route this
  * through the GSAP master timeline used for continuous 3D scroll-driving.
  */
+
+interface TextLine {
+  line: string;
+  /** Seconds into the chapter's entrance before this line's stagger begins. */
+  delay: number;
+}
+
+/**
+ * Precomputes each line's stagger-start delay as a pure derived value
+ * (0.03s per character + a brief pause before the next line, blank lines
+ * acting as a spacer that doesn't advance the delay) — a `reduce` rather
+ * than a closured mutable counter walked via `.map`, since mutating a
+ * variable captured across render is a real correctness issue React's
+ * compiler flags (subsequent renders aren't guaranteed to re-run in a way
+ * that leaves that mutation consistent).
+ */
+const computeLineDelays = (lines: string[]): TextLine[] => {
+  const { items } = lines.reduce<{ items: TextLine[]; next: number }>(
+    (acc, line) => {
+      if (line === '') {
+        return { items: [...acc.items, { line, delay: acc.next }], next: acc.next };
+      }
+      return { items: [...acc.items, { line, delay: acc.next }], next: acc.next + line.length * 0.03 + 0.15 };
+    },
+    { items: [], next: 0.2 } // 0.2s: slight pause after the chapter container enters
+  );
+  return items;
+};
+
 export const ChapterText = () => {
   const { chapter } = useChapterProgress();
   const lenis = useLenis();
+  const lineDelays = computeLineDelays(chapter.text);
 
   return (
     <div className="fixed inset-0 z-10 flex flex-col items-center justify-center px-6 text-center pointer-events-none">
@@ -26,44 +56,36 @@ export const ChapterText = () => {
           transition={{ duration: 0.6, ease: 'easeOut' }}
           className="text-white"
         >
-          {(() => {
-            let currentDelay = 0.2; // slight pause after chapter container enters
-            return chapter.text.map((line, i) => {
-              if (line === '') {
-                return <div key={i} className="h-3" />;
-              }
-
-              const lineDelay = currentDelay;
-              currentDelay += line.length * 0.03 + 0.15; // 0.03s per char + brief pause before next line
-
-              return (
-                <p key={i} className="text-lg sm:text-2xl font-light tracking-wide uppercase">
-                  <motion.span
-                    initial="hidden"
-                    animate="visible"
-                    variants={{
-                      visible: { transition: { staggerChildren: 0.03, delayChildren: lineDelay } },
-                      hidden: {},
-                    }}
-                    aria-label={line}
-                  >
-                    {line.split('').map((char, charIndex) => (
-                      <motion.span
-                        key={charIndex}
-                        aria-hidden="true"
-                        variants={{
-                          hidden: { opacity: 0, display: 'none' },
-                          visible: { opacity: 1, display: 'inline-block' },
-                        }}
-                      >
-                        {char === ' ' ? '\u00A0' : char}
-                      </motion.span>
-                    ))}
-                  </motion.span>
-                </p>
-              );
-            });
-          })()}
+          {lineDelays.map(({ line, delay }, i) =>
+            line === '' ? (
+              <div key={i} className="h-3" />
+            ) : (
+              <p key={i} className="text-lg sm:text-2xl font-light tracking-wide uppercase">
+                <motion.span
+                  initial="hidden"
+                  animate="visible"
+                  variants={{
+                    visible: { transition: { staggerChildren: 0.03, delayChildren: delay } },
+                    hidden: {},
+                  }}
+                  aria-label={line}
+                >
+                  {line.split('').map((char, charIndex) => (
+                    <motion.span
+                      key={charIndex}
+                      aria-hidden="true"
+                      variants={{
+                        hidden: { opacity: 0, display: 'none' },
+                        visible: { opacity: 1, display: 'inline-block' },
+                      }}
+                    >
+                      {char === ' ' ? ' ' : char}
+                    </motion.span>
+                  ))}
+                </motion.span>
+              </p>
+            )
+          )}
 
           {chapter.id === 'purpose' && (
             <motion.button
