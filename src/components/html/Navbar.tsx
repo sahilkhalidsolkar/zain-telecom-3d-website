@@ -15,7 +15,7 @@ import { TOTAL_SCROLL_VH } from '@/constants/scroll';
  * Responsibility:
  * Detached, floating glassmorphism navigation bar that:
  *   - Sits 16px from the top, centred, with rounded corners — not edge-to-edge
- *   - Hides (slides up) when scrolling down, reappears on scroll up (both
+ *   - Always stays visible once shown — no longer hides on scroll-down (both
  *     desktop AND mobile — same behaviour on all screen sizes)
  *   - Shows the Zain logo on the left and chapter nav links on the right
  *   - Highlights the active chapter with a spring-animated underline
@@ -46,32 +46,12 @@ export const Navbar = () => {
   const { chapter } = useChapterProgress();
   const activeId = chapter.id;
 
-  // Hide/show on scroll — identical on all screen sizes
-  const direction = useScrollStore((s) => s.direction);
-  const velocity = useScrollStore((s) => s.velocity);
-  const [hidden, setHidden] = useState(false);
-
   // Fade in gradually over Ch.1 so the navbar doesn't clash with the hero
   const canvasProgress = useScrollStore((s) => s.canvasProgress);
   const navOpacity = Math.min(1, canvasProgress / (2 / 23));
 
   // Mobile drawer
   const [drawerOpen, setDrawerOpen] = useState(false);
-
-  // Hide on scroll-down, reveal on scroll-up — same logic for all viewports.
-  // `direction`/`velocity` are themselves reactive state (from the
-  // useScrollStore subscription above), so Navbar already re-renders on
-  // every change — adjusting `hidden` synchronously during render (React's
-  // sanctioned pattern for deriving state from a prop/state change) avoids
-  // the extra render-then-effect-then-rerender round trip an effect would
-  // add on every scroll tick.
-  const [trackedScroll, setTrackedScroll] = useState({ direction, velocity });
-  if (trackedScroll.direction !== direction || trackedScroll.velocity !== velocity) {
-    setTrackedScroll({ direction, velocity });
-    if (Math.abs(velocity) >= 0.01) {
-      setHidden(direction === 1);
-    }
-  }
 
   // Close drawer on resize to desktop — same pattern as above.
   const [trackedIsMobile, setTrackedIsMobile] = useState(isMobile);
@@ -110,7 +90,6 @@ export const Navbar = () => {
       aria-label="Main navigation"
       className={`${floatingBase} px-6 py-2.5`}
       animate={{
-        y: hidden ? 'calc(-100% - 1.25rem)' : '0%',
         opacity: navOpacity,
       }}
       transition={{ duration: 0.35, ease: 'easeInOut' }}
@@ -167,11 +146,10 @@ export const Navbar = () => {
   // ── Mobile nav ─────────────────────────────────────────────────────────────
   const mobileNav = (
     <>
-      {/* Floating pill — hides on scroll-down exactly like desktop */}
+      {/* Floating pill — stays visible exactly like desktop */}
       <motion.div
         className={`${floatingBase} px-5 py-3`}
         animate={{
-          y: hidden ? 'calc(-100% - 1.25rem)' : '0%',
           opacity: navOpacity,
         }}
         transition={{ duration: 0.35, ease: 'easeInOut' }}
